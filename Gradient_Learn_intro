@@ -1,0 +1,128 @@
+# Please intall 'pillow' if you have not installed yet
+# pip install pillow
+
+from sympy import Derivative, Symbol
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.animation as ani
+from matplotlib import rc
+import seaborn as sns
+from IPython.display import HTML
+
+def gradient_descent(initial_x, fx_deriv, x, precision=1e-6, learning_rate=0.01):
+    '''
+    Calcurate the tangent and next x point by calcurating the gradient
+    '''
+    current_x = initial_x
+
+    # Move x point
+    next_x = current_x - learning_rate * fx_deriv.subs(x, current_x).evalf()
+
+    x_point = []
+    y_point = []
+    grad_line = []
+    slope = []
+    diff = []
+
+    num = 0
+
+    while True:
+        # Calcurate the tangent
+        current_y = fx.subs(x, current_x).evalf()
+        current_slope = fx_deriv.subs(x, current_x).evalf()
+        current_intercept = current_y - current_x * current_slope
+        current_grad = current_intercept + current_x * current_slope
+        current_diff = current_slope * learning_rate
+
+        x_point.append(current_x)
+        y_point.append(current_y)
+        grad_line.append(current_grad)
+        slope.append(current_slope)
+        diff.append(current_diff)
+
+        if abs(current_diff) < precision or num > 200:
+            break
+
+        current_x = next_x
+        next_x = current_x - learning_rate * fx_deriv.subs({x: current_x}).evalf()
+        num += 1
+
+    return_dict = {}
+    return_dict['num'] = num
+    return_dict['x_point'] = x_point
+    return_dict['y_point'] = y_point
+    return_dict['slope'] = slope
+    return_dict['diff'] = diff
+
+    return return_dict
+
+def plot_line(slope, x, y):
+    '''
+    Plot the tangent
+    '''    
+    X_range = np.linspace(-6, 6, 100)
+    b = - x * slope + y
+    y1 = slope * X_range + b
+    plt.plot(X_range, y1, c="r")
+
+def draw_graph(fx, x):
+    '''
+    Plot the graph of expression
+    '''
+    X = np.linspace(-6, 6, 100)
+    Y = [fx.subs({x: x_val}) for x_val in X]
+    plt.plot(X, Y, c='blue')
+
+def draw_frame(i):
+    '''
+    Create the animation of moving x point
+    '''
+    xs = return_dict['x_point'][i]
+    ys = return_dict['y_point'][i]
+    slope = return_dict['slope'][i]
+    diff = return_dict['diff'][i]
+
+    plt.clf()
+
+    plt.title(f'i={i}, diff={diff:.5f}, init_x={initial_x}, curr_x={xs:.3f}, lr=0.01')
+    plot_line(slope, xs, ys)
+    plt.plot(xs, ys, c='red', marker='o', ms='8')
+
+    draw_graph(fx, x)
+    plt.xlim(-6, 6)
+    plt.ylim(-50, 20)
+
+
+
+# Define x as expression value
+x = Symbol('x')
+
+# Define expressions
+fx = x**4/4 - 2*x**3/3 - 11*x**2/2 + 12*x
+fx_deriv = Derivative(fx, x).doit()
+
+# Define initial x point
+initial_x = 0.9
+
+# Define learning rate
+learning_rate = 0.01
+
+# Define the condition of stopping calculation of gradient descent
+precision = 1e-6
+
+# Calcurate gradient descent
+return_dict = gradient_descent(initial_x, fx_deriv, x, precision, learning_rate)
+
+sns.set()
+sns.set_style('white')
+
+fig = plt.figure(figsize=(6.5, 6.5))
+
+anim = ani.FuncAnimation(fig, draw_frame, frames=return_dict['num'], interval=200)
+
+# Please remove hash tag below if you want to download the animation by gif file
+# anim.save(f'Gradient_decent_{initial_x}_lr{learning_rate}_anim.gif', writer='pillow', dpi=300)
+
+# Please remove hash tags below if you want to check animation on your console
+# rc('animation', html='jshtml')
+# anim
