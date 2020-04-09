@@ -90,7 +90,7 @@ def draw_frame(i):
 
     draw_graph(fx, x)
     plt.xlim(-6, 6)
-    plt.ylim(-50, 20)
+    plt.ylim(-120, 70)
 
 
 
@@ -98,11 +98,11 @@ def draw_frame(i):
 x = Symbol('x')
 
 # Define expressions
-fx = x**4/4 - 2*x**3/3 - 11*x**2/2 + 12*x
+fx = x**4/4 - x**3/3 - 8*x**2 + 16*x
 fx_deriv = Derivative(fx, x).doit()
 
 # Define initial x point
-initial_x = 0.9
+initial_x = -6
 
 # Define learning rate
 learning_rate = 0.01
