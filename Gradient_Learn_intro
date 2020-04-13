@@ -91,7 +91,7 @@ sns.set_style('whitegrid')
 
 fig = plt.figure(figsize=((6.5, 6.5)))
 
-anim = ani.FuncAnimation(fig, animation, frames=i,interval=150)
+anim = ani.FuncAnimation(fig, animation, frames=i, interval=150)
 
 # Please remove the hashtag if you save the animation as a GIF file
 # anim.save(f'Gradient_decent_{initial_x}_lr{learning_rate}_anim.gif', writer='pillow', dpi=300)
