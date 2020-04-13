@@ -1,0 +1,168 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.animation as ani
+from matplotlib import rc
+import seaborn as sns
+from IPython.display import HTML
+
+def calcurate(initial_a, initial_b, learning_rate, presicion, nmax):
+    '''
+    Calcurate the gradient of a and b
+    '''
+    list_loss = []
+    list_current_a = []
+    list_current_b = []
+    list_next_a = []
+    list_next_b = []
+
+    current_score = objective_function(initial_a, initial_b)
+    list_loss.append(current_score)
+    list_current_a.append(initial_a)
+    list_current_b.append(initial_b)
+
+    current_a = initial_a
+    current_b = initial_b
+
+    for i in range(nmax):
+
+        if i != 0:
+            list_loss.append(current_score)
+            list_current_a.append(current_a)
+            list_current_b.append(current_b)
+
+        next_a = current_a - learning_rate * a_deriv(current_a, current_b)
+        next_b = current_b - learning_rate * b_deriv(current_a, current_b)
+
+        list_next_a.append(next_a)
+        list_next_b.append(next_b)
+
+        next_score = objective_function(next_a, next_b)
+
+        diff = abs(next_score - current_score)
+
+        if diff < precision and i != 0:
+            break
+
+        current_a = next_a
+        current_b = next_b
+        current_score = next_score
+
+    return i+1, list_loss, list_current_a, list_current_b, list_next_a, list_next_b
+
+def objective_function(a, b):
+    '''
+    Caluclate the total that difference of y value of regression line and real y value
+    'a' is intercept
+    'b' is slope
+    '''
+    error = y - (a + x * b)
+    square_error = error**2
+    sum_of_square_error = np.sum(square_error)
+    return sum_of_square_error
+
+def a_deriv(a, b):
+    '''
+    Derivative that objective function partial derivatived by 'a'
+    '''
+    return np.sum(-2 * (y - a - b * x))
+
+def b_deriv(a, b):
+    '''
+    Derivative that objective function partial derivatived by 'b'
+    '''
+    return np.sum(-2 * x * (y - a - b * x))
+
+def plot_line(a, b):
+    '''
+    plot the regression line
+    '''
+    xbase = np.linspace(x_low, x_high, 100)
+    y1 = a + x * b
+    ax1.plot(x, y1, c='red')
+
+def animation(i, ax1, ax2, ax3):
+    '''
+    Draw the animation
+    '''
+    loss = list_loss[i]
+    curr_a = list_current_a[i]
+    curr_b = list_current_b[i]
+    next_a = list_next_a[i]
+    next_b = list_next_b[i]
+
+    # Regression Line
+    ax1.cla()
+    ax1.scatter(x, y)
+    plot_line(curr_a, curr_b)
+    ax1.set_title(f'Regression Line  iteration={i}: a={curr_a:.3f}, b={curr_b:.3f}')
+    ax1.set_xlabel('x')
+    ax1.set_ylabel('y')
+    ax1.set_ylim(50, 200)
+
+    # Loss
+    ax2.cla()
+    ax2.set_title(f'Loss tracking  iteration={i}: Loss={loss:.3f}')
+    ax2.plot(range(count), list_loss, c='blue')
+    ax2.plot(i, loss, marker='o', c='red', ms=8)
+    ax2.set_xlabel('iteration')
+    ax2.set_ylabel('loss')
+    ax2.set_xlim(0, count)
+    ax2.set_ylim(0, 10e+6)
+
+    # Intercept and Slope
+    ax3.set_title(f'a and b tracking  iteration={i}: a={curr_a:.3f} b={curr_b:.3f}')
+    ax3.plot(curr_a, curr_b, marker='o', c='red', ms=5)
+    ax3.plot([curr_a, next_a], [curr_b, next_b], c='blue')
+    ax3.set_xlabel('intercept(a)')
+    ax3.set_ylabel('slope(b)');
+    ax3.set_xlim(a_low, a_high)
+    ax3.set_ylim(b_low, b_high)
+
+    plt.tight_layout()
+
+
+# x is plot range of regression line
+x_low = 0
+x_high = 10
+
+# Generate dummy data
+np.random.seed(100)
+data_size = 500
+x = np.random.randn(data_size)
+y = 17 * x + 120 + np.random.randn(data_size)
+
+# We want to predict 'a' value '120' and 'b' value '17' by this script
+
+# a is intercept of regression line
+a_low = 0
+a_high = 150
+
+# b is slope of regression line
+b_low = 0
+b_high = 150
+
+learning_rate = 0.0001
+precision = 0.1
+nmax = 100
+
+initial_a = 20
+initial_b = 100
+
+count, list_loss, list_current_a, list_current_b, list_next_a, list_next_b = calcurate(initial_a, initial_b, learning_rate, precision, nmax)
+
+sns.set()
+sns.set_style('white')
+
+fig = plt.figure(figsize=(11, 11))
+ax1 = fig.add_subplot(221)
+ax2 = fig.add_subplot(222)
+ax3 = fig.add_subplot(223)
+
+anim = ani.FuncAnimation(fig, animation, fargs=[ax1, ax2, ax3], frames=count, interval=150)
+
+# Please remove the hashtag if you save the animation as a GIF file
+# anim.save(f'Linear_Regression_Learn_1dim_anim.gif', writer='pillow', dpi=300)
+
+# Please remove the hashtag if you want to check the animation on the console
+# rc('animation', html='jshtml')
+# anim
