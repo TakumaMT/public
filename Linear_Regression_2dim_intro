@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as ani
 from matplotlib import rc
+from mpl_toolkits.mplot3d import Axes3D
 import seaborn as sns
 from IPython.display import HTML
 
@@ -13,6 +14,9 @@ def calcurate(initial_a, initial_b, initial_c, learning_rate, presicion, nmax):
     list_current_a = []
     list_current_b = []
     list_current_c = []
+    list_next_a = []
+    list_next_b = []
+    list_next_c = []
 
     current_score = objective_function(initial_a, initial_b, initial_c)
     list_loss.append(current_score)
@@ -36,6 +40,10 @@ def calcurate(initial_a, initial_b, initial_c, learning_rate, presicion, nmax):
         next_b = current_b - learning_rate * b_deriv(current_a, current_b, current_c)
         next_c = current_c - learning_rate * c_deriv(current_a, current_b, current_c)
 
+        list_next_a.append(next_a)
+        list_next_b.append(next_b)
+        list_next_c.append(next_c)
+
         next_score = objective_function(next_a, next_b, next_c)
 
         diff = abs(next_score - current_score)
@@ -48,7 +56,7 @@ def calcurate(initial_a, initial_b, initial_c, learning_rate, presicion, nmax):
         current_c = next_c
         current_score = next_score
 
-    return i+1, list_loss, list_current_a, list_current_b, list_current_c
+    return i+1, list_loss, list_current_a, list_current_b, list_current_c, list_next_a, list_next_b, list_next_c
 
 def objective_function(a, b, c):
     '''
@@ -92,6 +100,9 @@ def animation(i):
     curr_a = list_current_a[i]
     curr_b = list_current_b[i]
     curr_c = list_current_c[i]
+    next_a = list_next_a[i]
+    next_b = list_next_b[i]
+    next_c = list_next_c[i]
 
     # Regression Line
     ax1.cla()
@@ -112,6 +123,17 @@ def animation(i):
     ax2.set_xlim(0, count)
     ax2.set_ylim(0, 25e+4)
 
+    # a and b and c
+    ax3.set_title(f'a and b and c  iter={i}: a={curr_a:.3f} b={curr_b:.3f} c={curr_c:.3f}', y=1.02)
+    ax3.scatter(curr_a, curr_b, curr_c, c='red', s=5)
+    ax3.plot([curr_a, next_a], [curr_b, next_b], [curr_c, next_c], c='blue')
+    ax3.set_xlabel('a')
+    ax3.set_ylabel('b')
+    ax3.set_zlabel('c')
+    ax3.set_xlim(a_low, a_high)
+    ax3.set_ylim(b_low, b_high)
+    ax3.set_zlim(c_low, c_high)
+
     plt.tight_layout()
 
 
@@ -123,14 +145,14 @@ y = 2*x**2 - 5*x + 7 + np.random.randn(data_size)
 
 # We want to predict 'a' value '2' and 'b' value '-5' and 'c' value '7' by this script
 
-a_low = 0
-a_high = 150
+a_low = -15
+a_high = 15
 
-b_low = 0
-b_high = 150
+b_low = -15
+b_high = 15
 
-b_low = 0
-b_high = 150
+c_low = -15
+c_high = 15
 
 learning_rate = 0.0001
 precision = 0.1
@@ -140,14 +162,15 @@ initial_a = 10
 initial_b = 10
 initial_c = 10
 
-count, list_loss, list_current_a, list_current_b, list_current_c = calcurate(initial_a, initial_b, initial_c, learning_rate, precision, nmax)
+count, list_loss, list_current_a, list_current_b, list_current_c, list_next_a, list_next_b, list_next_c = calcurate(initial_a, initial_b, initial_c, learning_rate, precision, nmax)
 
 sns.set()
 sns.set_style('white')
 
-fig = plt.figure(figsize=(12, 6))
-ax1 = fig.add_subplot(1, 2, 1)
-ax2 = fig.add_subplot(1, 2, 2)
+fig = plt.figure(figsize=(11, 11))
+ax1 = fig.add_subplot(2, 2, 1)
+ax2 = fig.add_subplot(2, 2, 2)
+ax3 = fig.add_subplot(2, 2, 3, projection='3d')
 
 anim = ani.FuncAnimation(fig, animation, frames=count, interval=150)
 
