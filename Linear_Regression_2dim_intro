@@ -1,8 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as ani
-from matplotlib import rc
 from mpl_toolkits.mplot3d import Axes3D
+from matplotlib import rc
 import seaborn as sns
 from IPython.display import HTML
 
@@ -111,7 +111,7 @@ def animation(i):
     ax1.set_title(f'Regression Line  iter={i}: a={curr_a:.3f}, b={curr_b:.3f}, c={curr_c:.3f}')
     ax1.set_xlabel('x')
     ax1.set_ylabel('y')
-    ax1.set_ylim(0, 35)
+    ax1.set_ylim(0, 55)
 
     # Loss
     ax2.cla()
@@ -124,7 +124,7 @@ def animation(i):
     ax2.set_ylim(0, 25e+4)
 
     # a and b and c
-    ax3.set_title(f'a and b and c  iter={i}: a={curr_a:.3f} b={curr_b:.3f} c={curr_c:.3f}', y=1.02)
+    ax3.set_title(f'a and b and c  iter={i}: a={curr_a:.3f} b={curr_b:.3f} c={curr_c:.3f}', y=1.05)
     ax3.scatter(curr_a, curr_b, curr_c, c='red', s=5)
     ax3.plot([curr_a, next_a], [curr_b, next_b], [curr_c, next_c], c='blue')
     ax3.set_xlabel('a')
@@ -167,7 +167,7 @@ count, list_loss, list_current_a, list_current_b, list_current_c, list_next_a, l
 sns.set()
 sns.set_style('white')
 
-fig = plt.figure(figsize=(11, 11))
+fig = plt.figure(figsize=(12, 12))
 ax1 = fig.add_subplot(2, 2, 1)
 ax2 = fig.add_subplot(2, 2, 2)
 ax3 = fig.add_subplot(2, 2, 3, projection='3d')
