@@ -1,0 +1,159 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.animation as ani
+from matplotlib import rc
+import seaborn as sns
+from IPython.display import HTML
+
+def calcurate(initial_a, initial_b, initial_c, learning_rate, presicion, nmax):
+    '''
+    Calcurate the gradient of a and b
+    '''
+    list_loss = []
+    list_current_a = []
+    list_current_b = []
+    list_current_c = []
+
+    current_score = objective_function(initial_a, initial_b, initial_c)
+    list_loss.append(current_score)
+    list_current_a.append(initial_a)
+    list_current_b.append(initial_b)
+    list_current_c.append(initial_c)
+
+    current_a = initial_a
+    current_b = initial_b
+    current_c = initial_c
+
+    for i in range(nmax):
+
+        if i != 0:
+            list_loss.append(current_score)
+            list_current_a.append(current_a)
+            list_current_b.append(current_b)
+            list_current_c.append(current_c)
+
+        next_a = current_a - learning_rate * a_deriv(current_a, current_b, current_c)
+        next_b = current_b - learning_rate * b_deriv(current_a, current_b, current_c)
+        next_c = current_c - learning_rate * c_deriv(current_a, current_b, current_c)
+
+        next_score = objective_function(next_a, next_b, next_c)
+
+        diff = abs(next_score - current_score)
+
+        if diff < precision and i != 0:
+            break
+
+        current_a = next_a
+        current_b = next_b
+        current_c = next_c
+        current_score = next_score
+
+    return i+1, list_loss, list_current_a, list_current_b, list_current_c
+
+def objective_function(a, b, c):
+    '''
+    Caluclate the total that difference of y value of regression line and real y value
+    '''
+    error = y - (a*x**2 + b*x + c)
+    square_error = error**2
+    sum_of_square_error = np.sum(square_error)
+    return sum_of_square_error
+
+def a_deriv(a, b, c):
+    '''
+    Derivative that objective function partial derivatived by 'a'
+    '''
+    return np.sum(-2*x**2*(-a*x**2 - b*x - c + y))
+
+def b_deriv(a, b, c):
+    '''
+    Derivative that objective function partial derivatived by 'b'
+    '''
+    return np.sum(-2*x*(-a*x**2 - b*x - c + y))
+
+def c_deriv(a, b, c):
+    '''
+    Derivative that objective function partial derivatived by 'c'
+    '''
+    return np.sum(2*a*x**2 + 2*b*x + 2*c - 2*y)
+
+def plot_line(a, b, c):
+    '''
+    plot the regression line
+    '''
+    y1 = a*x**2 + b*x + c
+    ax1.plot(x, y1, c='red')
+
+def animation(i):
+    '''
+    Draw the animation
+    '''
+    loss = list_loss[i]
+    curr_a = list_current_a[i]
+    curr_b = list_current_b[i]
+    curr_c = list_current_c[i]
+
+    # Regression Line
+    ax1.cla()
+    ax1.scatter(x, y)
+    plot_line(curr_a, curr_b, curr_c)
+    ax1.set_title(f'Regression Line  iter={i}: a={curr_a:.3f}, b={curr_b:.3f}, c={curr_c:.3f}')
+    ax1.set_xlabel('x')
+    ax1.set_ylabel('y')
+    ax1.set_ylim(0, 35)
+
+    # Loss
+    ax2.cla()
+    ax2.set_title(f'Loss tracking  iter={i}: Loss={loss:.3f}')
+    ax2.plot(range(count), list_loss, c='blue')
+    ax2.plot(i, loss, marker='o', c='red', ms=8)
+    ax2.set_xlabel('iteration')
+    ax2.set_ylabel('loss')
+    ax2.set_xlim(0, count)
+    ax2.set_ylim(0, 25e+4)
+
+    plt.tight_layout()
+
+
+# Generate dummy data
+np.random.seed(1234)
+data_size = 500
+x = np.sort(np.random.randn(data_size))
+y = 2*x**2 - 5*x + 7 + np.random.randn(data_size)
+
+# We want to predict 'a' value '2' and 'b' value '-5' and 'c' value '7' by this script
+
+a_low = 0
+a_high = 150
+
+b_low = 0
+b_high = 150
+
+b_low = 0
+b_high = 150
+
+learning_rate = 0.0001
+precision = 0.1
+nmax = 100
+
+initial_a = 10
+initial_b = 10
+initial_c = 10
+
+count, list_loss, list_current_a, list_current_b, list_current_c = calcurate(initial_a, initial_b, initial_c, learning_rate, precision, nmax)
+
+sns.set()
+sns.set_style('white')
+
+fig = plt.figure(figsize=(12, 6))
+ax1 = fig.add_subplot(1, 2, 1)
+ax2 = fig.add_subplot(1, 2, 2)
+
+anim = ani.FuncAnimation(fig, animation, frames=count, interval=150)
+
+# Please remove the hashtag if you save the animation as a GIF file
+# anim.save(f'Linear_Regression_Learn_2dim_anim.gif', writer='pillow', dpi=300)
+
+# Please remove the hashtag if you want to check the animation on the console
+# rc('animation', html='jshtml')
+# anim
