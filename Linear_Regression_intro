@@ -80,7 +80,7 @@ def plot_line(a, b):
     y1 = a + x * b
     ax1.plot(x, y1, c='red')
 
-def animation(i, ax1, ax2, ax3):
+def animation(i):
     '''
     Draw the animation
     '''
@@ -158,7 +158,7 @@ ax1 = fig.add_subplot(221)
 ax2 = fig.add_subplot(222)
 ax3 = fig.add_subplot(223)
 
-anim = ani.FuncAnimation(fig, animation, fargs=[ax1, ax2, ax3], frames=count, interval=150)
+anim = ani.FuncAnimation(fig, animation, frames=count, interval=150)
 
 # Please remove the hashtag if you save the animation as a GIF file
 # anim.save(f'Linear_Regression_Learn_1dim_anim.gif', writer='pillow', dpi=300)
