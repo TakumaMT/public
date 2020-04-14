@@ -76,7 +76,6 @@ def plot_line(a, b):
     '''
     plot the regression line
     '''
-    xbase = np.linspace(x_low, x_high, 100)
     y1 = a + x * b
     ax1.plot(x, y1, c='red')
 
@@ -94,14 +93,14 @@ def animation(i):
     ax1.cla()
     ax1.scatter(x, y)
     plot_line(curr_a, curr_b)
-    ax1.set_title(f'Regression Line  iteration={i}: a={curr_a:.3f}, b={curr_b:.3f}')
+    ax1.set_title(f'Regression Line  iter={i}: a={curr_a:.3f}, b={curr_b:.3f}')
     ax1.set_xlabel('x')
     ax1.set_ylabel('y')
     ax1.set_ylim(50, 200)
 
     # Loss
     ax2.cla()
-    ax2.set_title(f'Loss tracking  iteration={i}: Loss={loss:.3f}')
+    ax2.set_title(f'Loss tracking  iter={i}: Loss={loss:.3f}')
     ax2.plot(range(count), list_loss, c='blue')
     ax2.plot(i, loss, marker='o', c='red', ms=8)
     ax2.set_xlabel('iteration')
@@ -110,7 +109,7 @@ def animation(i):
     ax2.set_ylim(0, 10e+6)
 
     # Intercept and Slope
-    ax3.set_title(f'a and b tracking  iteration={i}: a={curr_a:.3f} b={curr_b:.3f}')
+    ax3.set_title(f'a and b tracking  iter={i}: a={curr_a:.3f} b={curr_b:.3f}')
     ax3.plot(curr_a, curr_b, marker='o', c='red', ms=5)
     ax3.plot([curr_a, next_a], [curr_b, next_b], c='blue')
     ax3.set_xlabel('intercept(a)')
@@ -121,14 +120,10 @@ def animation(i):
     plt.tight_layout()
 
 
-# x is plot range of regression line
-x_low = 0
-x_high = 10
-
 # Generate dummy data
 np.random.seed(100)
 data_size = 500
-x = np.random.randn(data_size)
+x = np.sort(np.random.randn(data_size))
 y = 17 * x + 120 + np.random.randn(data_size)
 
 # We want to predict 'a' value '120' and 'b' value '17' by this script
@@ -143,7 +138,7 @@ b_high = 150
 
 learning_rate = 0.0001
 precision = 0.1
-nmax = 100
+nmax = 50
 
 initial_a = 20
 initial_b = 100
