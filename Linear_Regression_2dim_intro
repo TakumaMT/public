@@ -7,7 +7,7 @@ from IPython.display import HTML
 
 def calcurate(initial_a, initial_b, initial_c, learning_rate, presicion, nmax):
     '''
-    Calcurate the gradient of a and b
+    Calcurate the gradient of a and b and c
     '''
     list_loss = []
     list_current_a = []
